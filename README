@@ -1,0 +1,40 @@
+TRAPP - Timed Remote Attestation Peer-to-Peer
+=============================================
+
+trapp is an implementation of the Pioneer algorithm [1] for Raspberry Pi. This
+project was undertaken for my dissertation.
+
+[1] https://cgis.cs.umd.edu/~elaine/docs/pioneer.pdf
+
+This repository is split into two directories: application and module.
+Module is a Linux Kernel Module to be built and run on the Raspberry Pi which
+performs remote attestation services. Application is an application which
+invokes a remote attestation over the loopback network interface for testing.
+
+To run the test, perform the following commands on a Raspberry Pi in this
+directory:
+    make
+    sudo make insert
+    sudo make run_prover > /dev/null &
+    sudo make run_verifier
+
+This will build all modules; insert the LKM into the kernel; run the prover
+which will receive the challenge then run the verifier which will send the
+challenge.
+
+To remove the module run
+    sudo make remove
+
+To insert an attacker instead of a legitimate module run
+    sudo make insert_bad
+and use
+    sudo make remove_bad
+to remove it.
+
+Bugs
+====
+
+ * This code may not function correctly in the face of Kernel ASLR.
+ * There seems to be a very rare (< 1/1000) case where the wrong answer is
+   produced by the asm.
+ * The protocol has no timeouts. If a message is not received it will hang.
